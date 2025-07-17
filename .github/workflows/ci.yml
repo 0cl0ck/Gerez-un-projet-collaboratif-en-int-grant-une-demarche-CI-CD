@@ -124,6 +124,10 @@ jobs:
       working-directory: ./front
       run: npm ci
     
+    - name: Install karma-junit-reporter
+      working-directory: ./front
+      run: npm install --save-dev karma-junit-reporter
+    
     - name: Build backend
       working-directory: ./back
       run: mvn clean compile
