@@ -26,9 +26,23 @@ jobs:
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2
     
-    - name: Run backend tests
+    - name: Run backend tests with coverage
       working-directory: ./back
-      run: mvn clean test
+      run: mvn clean verify
+    
+    - name: Upload backend test results
+      uses: actions/upload-artifact@v3
+      if: success() || failure()
+      with:
+        name: backend-test-results
+        path: back/target/surefire-reports/TEST-*.xml
+    
+    - name: Upload backend coverage reports
+      uses: actions/upload-artifact@v3
+      if: success() || failure()
+      with:
+        name: backend-coverage
+        path: back/target/site/jacoco/
 
   test-frontend:
     runs-on: ubuntu-latest
@@ -47,6 +61,24 @@ jobs:
       working-directory: ./front
       run: npm ci
     
-    - name: Run frontend tests
+    - name: Install karma-junit-reporter
       working-directory: ./front
-      run: npm run test -- --no-watch --no-progress --browsers=ChromeHeadless
+      run: npm install --save-dev karma-junit-reporter
+    
+    - name: Run frontend tests with coverage
+      working-directory: ./front
+      run: npm run test -- --no-watch --no-progress --browsers=ChromeHeadless --code-coverage
+    
+    - name: Upload frontend test results
+      uses: actions/upload-artifact@v3
+      if: success() || failure()
+      with:
+        name: frontend-test-results
+        path: front/TESTS-*.xml
+    
+    - name: Upload frontend coverage reports
+      uses: actions/upload-artifact@v3
+      if: success() || failure()
+      with:
+        name: frontend-coverage
+        path: front/coverage/bobapp/

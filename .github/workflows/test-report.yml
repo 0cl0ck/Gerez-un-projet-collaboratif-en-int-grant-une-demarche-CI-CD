@@ -1,0 +1,39 @@
+name: Test Report
+
+on:
+  workflow_run:
+    workflows: ['CI']
+    types:
+      - completed
+
+jobs:
+  test-report:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure' }}
+    
+    steps:
+    - name: Backend Test Report
+      uses: phoenix-actions/test-reporting@v8
+      if: always()
+      with:
+        artifact: backend-test-results
+        name: Backend Tests
+        path: '**/*.xml'
+        reporter: java-junit
+        only-summary: false
+        list-suites: 'failed'
+        list-tests: 'failed'
+        fail-on-error: false
+    
+    - name: Frontend Test Report
+      uses: phoenix-actions/test-reporting@v8
+      if: always()
+      with:
+        artifact: frontend-test-results
+        name: Frontend Tests
+        path: '**/*.xml'
+        reporter: jest-junit
+        only-summary: false
+        list-suites: 'failed'
+        list-tests: 'failed'
+        fail-on-error: false
