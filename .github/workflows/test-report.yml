@@ -32,7 +32,7 @@ jobs:
         artifact: frontend-test-results
         name: Frontend Tests
         path: '**/*.xml'
-        reporter: jest-junit
+        reporter: java-junit
         only-summary: false
         list-suites: 'failed'
         list-tests: 'failed'
